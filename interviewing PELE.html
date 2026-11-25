@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The King of Football: A Fictional Interview with Pelé</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#0b1d12;--fg:#fff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+#stage{position:relative;max-width:960px;margin:0 auto;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(#0a1a3a 0%,#27407a 38%,#2e7d32 38%,#1b5e20 100%)}
+#cam{position:absolute;inset:0;transform-origin:50% 62%;transition:transform .85s cubic-bezier(.22,.8,.36,1)}
+#stage.cam-j #cam{transform:scale(1.13) translateX(7%)}
+#stage.cam-k #cam{transform:scale(1.13) translateX(-7%)}
+#stage.cam-wide #cam{transform:scale(1) translateX(0)}
+#scoreboard{position:absolute;top:12px;left:14px;z-index:4;display:flex;align-items:center;gap:8px;background:rgba(8,14,28,.82);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);padding:5px 11px;border-radius:8px;font-size:clamp(10px,1.35vw,13px);font-weight:700;letter-spacing:.04em}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#ff3d57;box-shadow:0 0 8px #ff3d57;animation:pulseDot 1.2s infinite alternate}
+@keyframes pulseDot{from{opacity:.45;transform:scale(.9)}to{opacity:1;transform:scale(1.15)}}
+.sb-sep{opacity:.35}
+.sb-line{color:#ffd54f}
+#recBadge{display:none;align-items:center;gap:6px;background:#c62828;color:#fff;padding:2px 8px;border-radius:999px;font-size:11px}
+#stage.recording #recBadge{display:inline-flex}
+#crowd{position:absolute;left:0;right:0;top:18%;height:22%;background:repeating-linear-gradient(90deg,#c62828 0 14px,#f9a825 14px 28px,#1565c0 28px 42px,#eee 42px 56px);opacity:.55;transition:opacity .35s,filter .35s}
+#stage.hype #crowd{opacity:.85;filter:brightness(1.2);animation:crowdWave .45s ease-in-out infinite alternate}
+@keyframes crowdWave{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+#lights{position:absolute;top:2%;left:0;right:0;display:flex;justify-content:space-around;font-size:3vw}
+#lights span{transition:transform .3s,filter .3s}
+#stage.hype #lights span{transform:scale(1.2);filter:drop-shadow(0 0 10px #fff59d)}
+#pitch{position:absolute;left:10%;right:10%;bottom:0;height:20%;border-top:3px solid #ffffff88}
+.who{position:absolute;bottom:18%;width:26%;text-align:center;transition:transform .25s,filter .25s;filter:brightness(.62)}
+.who.on{filter:none;transform:translateY(-3%) scale(1.04)}
+#j{left:10%}#k{right:10%}
+.avatar-wrap{position:relative;width:100%;aspect-ratio:200/260}
+.who svg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.head{position:absolute;left:50%;top:11.5%;width:45%;aspect-ratio:1/1;transform:translateX(-50%);border-radius:50%;overflow:hidden;z-index:2;border:3px solid rgba(255,255,255,.85);box-shadow:0 8px 18px rgba(0,0,0,.55);background:#222;transition:transform .2s}
+.head img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block}
+.mouth-overlay{position:absolute;left:50%;bottom:16.5%;width:25%;height:10.5%;transform:translateX(-50%) scaleY(.22);transform-origin:center;border-radius:999px;background:radial-gradient(circle at 50% 35%,#b33939 25%,#470d11 90%);border:1.5px solid rgba(255,210,190,.5);opacity:0;pointer-events:none;z-index:3}
+.on.talk .head{animation:nod .6s ease-in-out infinite alternate}
+.on.talk .mouth-overlay{opacity:.95;animation:talkMouth .18s ease-in-out infinite alternate}
+@keyframes talkMouth{
+  0%{transform:translateX(-50%) scaleY(.18) scaleX(.9)}
+  50%{transform:translateX(-50%) scaleY(.75) scaleX(1.02)}
+  100%{transform:translateX(-50%) scaleY(1.2) scaleX(1.07)}
+}
+@keyframes nod{
+  0%{transform:translateX(-50%) rotate(-1.8deg) translateY(0)}
+  100%{transform:translateX(-50%) rotate(1.8deg) translateY(-2.5px)}
+}
+.tag{position:relative;z-index:3;font-size:1.6vw;font-weight:700;background:#000a;border-radius:6px;padding:.3em .6em;display:inline-block;margin-top:.3em}
+#sub{position:absolute;left:4%;right:4%;bottom:3%;z-index:4;background:#000c;border-radius:10px;padding:1.2% 2%;font-size:clamp(11px,1.9vw,22px);line-height:1.35;min-height:3.2em;color:#fff}
+#sub b{color:#ffd54f}
+#title{position:absolute;inset:0;z-index:5;background:#000d;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6%;gap:1em;color:#fff}
+#title h1{margin:0;font-size:clamp(18px,4vw,40px)}
+#title p{margin:0;font-size:clamp(11px,1.8vw,18px);max-width:34em}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+button{font:inherit;font-weight:700;padding:.7em 1.6em;border:0;border-radius:99px;background:#ffd54f;color:#222;cursor:pointer;font-size:clamp(13px,1.9vw,19px);transition:transform .15s,opacity .15s}
+button:hover{transform:scale(1.03)}
+button.rec-btn{background:#ff5252;color:#fff}
+#bar{height:5px;background:#ffffff33;max-width:960px;margin:0 auto}#bar i{display:block;height:100%;width:0;background:#ffd54f}
+#note{max-width:960px;margin:0 auto;padding:12px 16px;font-size:13px;opacity:.85;line-height:1.45}
+</style></head><body>
+<div id="stage" class="cam-wide">
+ <div id="scoreboard">
+  <span class="live-dot"></span>
+  <span>LIVE BROADCAST</span>
+  <span class="sb-sep">|</span>
+  <span>STADIUM SPECIAL</span>
+  <span class="sb-sep">|</span>
+  <span class="sb-line" id="lineCounter">READY</span>
+  <span id="recBadge">● REC</span>
+ </div>
+ <div id="cam">
+  <div id="lights"><span>💡</span><span>💡</span><span>💡</span><span>💡</span></div>
+  <div id="crowd"></div><div id="pitch"></div>
+  <div class="who" id="j">
+   <div class="avatar-wrap">
+    <svg viewBox="0 0 200 260">
+     <rect x="45" y="130" width="110" height="130" rx="30" fill="#263238"/>
+     <rect x="92" y="130" width="16" height="60" fill="#fff"/>
+     <polygon points="100,136 95,152 100,188 105,152" fill="#c62828"/>
+     <rect x="128" y="165" width="14" height="50" rx="7" fill="#999"/>
+     <circle cx="135" cy="160" r="12" fill="#ccc"/>
+    </svg>
+    <div class="head">
+     <img src="journalist.png" alt="Journalist realistic portrait">
+     <div class="mouth-overlay"></div>
+    </div>
+   </div>
+   <span class="tag">Journalist</span>
+  </div>
+  <div class="who" id="k">
+   <div class="avatar-wrap">
+    <svg viewBox="0 0 200 260">
+     <rect x="45" y="130" width="110" height="130" rx="30" fill="#fdd835"/>
+     <rect x="45" y="130" width="110" height="18" fill="#2e7d32"/>
+     <text x="100" y="205" text-anchor="middle" font-size="46" font-weight="700" fill="#2e7d32">10</text>
+    </svg>
+    <div class="head">
+     <img src="pele.jpeg" alt="Pelé realistic portrait">
+     <div class="mouth-overlay"></div>
+    </div>
+   </div>
+   <span class="tag">Pelé</span>
+  </div>
+ </div>
+ <div id="sub"></div>
+ <div id="title">
+  <h1>🏆 Pelé in the Stadium</h1>
+  <p>A fictional, dramatized interview created for a school project. This is a dramatized presentation rather than a real recording.</p>
+  <div class="btn-row">
+   <button id="go">▶ Play interview</button>
+   <button id="recGo" class="rec-btn">⏺ Record &amp; Download Video</button>
+  </div>
+ </div>
+</div>
+<div id="bar"><i id="p"></i></div>
+<div id="note">Tip: To export as a video file automatically, run this page on a local server (e.g., VS Code Live Server or <code>python -m http.server</code>), click <b>Record &amp; Download Video</b>, pick <b>Current Tab</b>, and check <b>Share tab audio</b>.</div>
+<script>
+var S=[
+["J","Good evening, ladies and gentlemen! Welcome to this special interview, live from this magnificent football stadium. Tonight, we are honored to welcome a three-time World Cup champion, a symbol of excellence, and the legendary King of Football. Please welcome the one and only Pelé!"],
+["K","Thank you very much! It is a great pleasure to be here. Football has been my passion since childhood, and I am happy to share my experiences and memories with you today."],
+["J","Every great legend has a beginning. You were only seventeen when you won your first World Cup in 1958. Did you ever imagine that, at such a young age, you would make football history?"],
+["K","Honestly, no. I was just a young boy who loved playing football. Winning the World Cup was beyond my dreams. It was an unforgettable moment, and I felt extremely proud to represent Brazil."],
+["J","After that triumph, you faced enormous pressure as a young star. How did you handle the challenges and stay focused on your goals?"],
+["K","It was not always easy, but I always stayed focused. I trusted my teammates, listened to my coaches, and worked hard every day. I learned that success requires patience, discipline, and teamwork."],
+["J","You achieved something extraordinary by winning three World Cups, in 1958, 1962, and 1970. What made those victories so special, and which one means the most to you?"],
+["K","Every victory was special in its own way. Winning my first World Cup in 1958 was a dream come true, while winning in 1970 was another incredible achievement. I am proud of all three because we made history together."],
+["J","Around the world, you are known as the King of Football. What does this title mean to you?"],
+["K","I feel very honored by this title. However, I never played football just to become famous. I played because I loved the game and wanted to bring happiness to people. Football gave me everything."],
+["J","If you could relive just one moment on the pitch, which would you choose, and why?"],
+["K","I would choose the moment I won my first World Cup. I was only seventeen, and celebrating with my teammates was an incredible feeling. That moment will always remain in my heart."],
+["J","Football has changed a lot over the years. What is the biggest difference between football in your generation and modern football?"],
+["K","Football today is faster and more physical. Players have better training facilities and modern technology. However, talent, teamwork, and passion are still the most important parts of football."],
+["J","Among today’s stars, Cristiano Ronaldo continues to inspire millions. What impresses you most about his career?"],
+["K","I admire his determination, discipline, and hard work. He has achieved incredible things, and his commitment to football is an excellent example for young players around the world."],
+["J","Finally, millions of young players dream of following in your footsteps. If you could give one message to every young footballer, what would it be?"],
+["K","My message is simple: believe in yourselves, work hard, respect your coaches and teammates, and never give up on your dreams. Talent is important, but dedication and passion make the difference."],
+["J","Thank you for this wonderful conversation. Your journey has inspired millions of people around the world. Ladies and gentlemen, Pelé!"],
+["K","Thank you for having me. Football has given me a beautiful life, and I will always be grateful. To all young players: keep dreaming, keep working hard, and never forget to enjoy the beautiful game."]
+];
+var i=0,run=false,sub=document.getElementById("sub"),el={J:document.getElementById("j"),K:document.getElementById("k")},
+stage=document.getElementById("stage"),lineCounter=document.getElementById("lineCounter"),
+bar=document.getElementById("p"),T=null,recorder=null,chunks=[],recStream=null;
+
+function pickVoice(role, voices){
+  var en=voices.filter(function(x){return /^en(-|_|$)/i.test(x.lang)});
+  var pool=en.length?en:voices;
+  if(!pool.length)return null;
+  function score(v){
+    var n=(v.name||"").toLowerCase();
+    var s=0;
+    if(/natural|neural|online|google|premium|enhanced|aria|guy|ryan|david|daniel|mark/i.test(n))s+=25;
+    if(/en-us|en_us|en-gb|en_gb/i.test(v.lang||""))s+=10;
+    if(role==="K"){
+      if(/male|guy|david|daniel|ryan|mark|george|arthur|brian|deep|baritone/i.test(n))s+=18;
+      if(/female|aria|jenny|samantha|victoria|zira/i.test(n))s-=12;
+    }else{
+      if(/male|guy|ryan|daniel|david|mark|alex|fred/i.test(n))s+=12;
+    }
+    return s;
+  }
+  var sorted=pool.slice().sort(function(a,b){return score(b)-score(a)});
+  if(role==="K" && sorted.length>1){return sorted[1]}
+  return sorted[0];
+}
+
+function setCameraAndCrowd(k,t){
+  stage.classList.remove("cam-j","cam-k","cam-wide","hype");
+  if(k==="J"){stage.classList.add("cam-j")}
+  else if(k==="K"){stage.classList.add("cam-k")}
+  else{stage.classList.add("cam-wide")}
+  if(t && /world cup|king of football|victory|victories|welcome|history|legendary|pelé|pele/i.test(t)){
+    stage.classList.add("hype");
+  }
+}
+function show(k,t){
+  el.J.className="who";el.K.className="who";
+  if(k){
+    el[k].className="who on talk";
+    lineCounter.textContent="PART "+String(i+1).padStart(2,"0")+" / "+String(S.length).padStart(2,"0");
+  }else{
+    lineCounter.textContent="FINISHED";
+  }
+  setCameraAndCrowd(k,t);
+  sub.innerHTML=k?"<b>"+(k=="J"?"Journalist":"Pelé")+":</b> "+t:""
+}
+function stopRecording(){
+  if(recorder && recorder.state!=="inactive"){
+    recorder.stop();
+  }
+  stage.classList.remove("recording");
+}
+function done(){
+  clearTimeout(T);
+  if(!run)return;
+  i++;
+  if(i>=S.length){
+    run=false;
+    show(null,"");
+    sub.textContent="🎬 The end. Thank you for watching! (Fictional dramatization for a school project.)";
+    document.getElementById("go").textContent="↻ Replay";
+    setTimeout(function(){
+      stopRecording();
+      document.getElementById("title").style.display="flex";
+    },1200);
+    return;
+  }
+  setTimeout(line,500);
+}
+function line(){
+  if(!run)return;
+  var s=S[i];
+  bar.style.width=(i/S.length*100)+"%";
+  show(s[0],s[1]);
+  var ss=window.speechSynthesis;
+  if(ss&&window.SpeechSynthesisUtterance){
+    ss.cancel();
+    var u=new SpeechSynthesisUtterance(s[1]);
+    u.lang="en-US";
+    var v=ss.getVoices();
+    var chosen=pickVoice(s[0],v);
+    if(chosen){u.voice=chosen}
+    if(s[0]=="J"){u.pitch=1.05;u.rate=1.02}
+    else{u.pitch=.84;u.rate=.94}
+    u.onend=done;
+    u.onerror=done;
+    ss.speak(u);
+    T=setTimeout(done,s[1].length*105+4000);
+  } else {
+    T=setTimeout(done,s[1].length*70);
+  }
+}
+function startShow(){
+  i=0;
+  run=true;
+  document.getElementById("title").style.display="none";
+  line();
+}
+document.getElementById("go").onclick=startShow;
+
+document.getElementById("recGo").onclick=async function(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+    alert("Screen recording is not supported in this browser. Please open in Chrome or Edge on localhost.");
+    return;
+  }
+  try{
+    recStream=await navigator.mediaDevices.getDisplayMedia({
+      video:{displaySurface:"browser"},
+      audio:true,
+      preferCurrentTab:true
+    });
+    chunks=[];
+    var mime=MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
+      ? "video/webm;codecs=vp9,opus"
+      : "video/webm";
+    recorder=new MediaRecorder(recStream,{mimeType:mime});
+    recorder.ondataavailable=function(e){if(e.data && e.data.size>0)chunks.push(e.data)};
+    recorder.onstop=function(){
+      var blob=new Blob(chunks,{type:mime});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement("a");
+      a.href=url;
+      a.download="pele-stadium-interview.webm";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function(){URL.revokeObjectURL(url)},5000);
+      if(recStream){recStream.getTracks().forEach(function(tr){tr.stop()});recStream=null}
+    };
+    recStream.getVideoTracks()[0].onended=function(){stopRecording()};
+    stage.classList.add("recording");
+    recorder.start(500);
+    setTimeout(startShow,600);
+  }catch(err){
+    alert("Recording canceled or blocked. Make sure you open the file via a local server (http://localhost) and allow tab sharing.");
+  }
+};
+
+if(window.speechSynthesis){speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=function(){speechSynthesis.getVoices()}}
+</script></body></html>
