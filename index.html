@@ -54,8 +54,11 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-
 .btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
 button{font:inherit;font-weight:700;padding:.7em 1.6em;border:0;border-radius:99px;background:#ffd54f;color:#222;cursor:pointer;font-size:clamp(13px,1.9vw,19px);transition:transform .15s,opacity .15s}
 button:hover{transform:scale(1.03)}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 button.rec-btn{background:#ff5252;color:#fff}
-#bar{height:5px;background:#ffffff33;max-width:960px;margin:0 auto}#bar i{display:block;height:100%;width:0;background:#ffd54f}
+#bar{height:5px;background:#ffffff33;max-width:960px;margin:0 auto}#bar i{display:block;height:100%;width:0;background:#ffd54f;transition:width .25s ease}
+#controls{max-width:960px;margin:10px auto 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+#controls button{font-size:14px;padding:.45em 1.1em}
 #note{max-width:960px;margin:0 auto;padding:12px 16px;font-size:13px;opacity:.85;line-height:1.45}
 </style></head><body>
 <div id="stage" class="cam-wide">
@@ -113,6 +116,12 @@ button.rec-btn{background:#ff5252;color:#fff}
  </div>
 </div>
 <div id="bar"><i id="p"></i></div>
+<div id="controls">
+ <button type="button" id="prevBtn" disabled>⏮ Prev</button>
+ <button type="button" id="pauseBtn" disabled>⏸ Pause</button>
+ <button type="button" id="nextBtn" disabled>⏭ Next</button>
+ <button type="button" id="restartBtn" disabled>↺ Restart</button>
+</div>
 <div id="note">Tip: To export as a video file automatically, run this page on a local server (e.g., VS Code Live Server or <code>python -m http.server</code>), click <b>Record &amp; Download Video</b>, pick <b>Current Tab</b>, and check <b>Share tab audio</b>.</div>
 <script>
 var S=[
@@ -137,9 +146,30 @@ var S=[
 ["J","Thank you for this wonderful conversation. Your journey has inspired millions of people around the world. Ladies and gentlemen, Pelé!"],
 ["K","Thank you for having me. Football has given me a beautiful life, and I will always be grateful. To all young players: keep dreaming, keep working hard, and never forget to enjoy the beautiful game."]
 ];
-var i=0,run=false,sub=document.getElementById("sub"),el={J:document.getElementById("j"),K:document.getElementById("k")},
+var i=0,run=false,paused=false,playToken=0,
+sub=document.getElementById("sub"),el={J:document.getElementById("j"),K:document.getElementById("k")},
 stage=document.getElementById("stage"),lineCounter=document.getElementById("lineCounter"),
-bar=document.getElementById("p"),T=null,recorder=null,chunks=[],recStream=null;
+bar=document.getElementById("p"),T=null,nextTimer=null,recorder=null,chunks=[],recStream=null;
+var prevBtn=document.getElementById("prevBtn"),pauseBtn=document.getElementById("pauseBtn"),
+nextBtn=document.getElementById("nextBtn"),restartBtn=document.getElementById("restartBtn");
+
+function clearTimers(){
+  clearTimeout(T);
+  clearTimeout(nextTimer);
+  T=null;
+  nextTimer=null;
+}
+
+function setControlButtonsState(active){
+  prevBtn.disabled=!active;
+  pauseBtn.disabled=!active;
+  nextBtn.disabled=!active;
+  restartBtn.disabled=!active;
+  if(!active){
+    paused=false;
+    pauseBtn.textContent="⏸ Pause";
+  }
+}
 
 function pickVoice(role, voices){
   var en=voices.filter(function(x){return /^en(-|_|$)/i.test(x.lang)});
@@ -172,10 +202,11 @@ function setCameraAndCrowd(k,t){
     stage.classList.add("hype");
   }
 }
+
 function show(k,t){
   el.J.className="who";el.K.className="who";
   if(k){
-    el[k].className="who on talk";
+    el[k].className="who on"+(paused?"":" talk");
     lineCounter.textContent="PART "+String(i+1).padStart(2,"0")+" / "+String(S.length).padStart(2,"0");
   }else{
     lineCounter.textContent="FINISHED";
@@ -183,34 +214,51 @@ function show(k,t){
   setCameraAndCrowd(k,t);
   sub.innerHTML=k?"<b>"+(k=="J"?"Journalist":"Pelé")+":</b> "+t:""
 }
+
 function stopRecording(){
   if(recorder && recorder.state!=="inactive"){
     recorder.stop();
   }
   stage.classList.remove("recording");
 }
-function done(){
-  clearTimeout(T);
-  if(!run)return;
-  i++;
-  if(i>=S.length){
-    run=false;
-    show(null,"");
-    sub.textContent="🎬 The end. Thank you for watching! (Fictional dramatization for a school project.)";
-    document.getElementById("go").textContent="↻ Replay";
-    setTimeout(function(){
-      stopRecording();
-      document.getElementById("title").style.display="flex";
-    },1200);
+
+function finishShow(token){
+  if(token!==playToken)return;
+  clearTimers();
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  run=false;
+  setControlButtonsState(false);
+  bar.style.width="100%";
+  show(null,"");
+  sub.textContent="🎬 The end. Thank you for watching! (Fictional dramatization for a school project.)";
+  document.getElementById("go").textContent="↻ Replay";
+  setTimeout(function(){
+    stopRecording();
+    document.getElementById("title").style.display="flex";
+  },1200);
+}
+
+function advanceAfterLine(token){
+  if(token!==playToken || !run || paused)return;
+  clearTimers();
+  if(i+1>=S.length){
+    finishShow(token);
     return;
   }
-  setTimeout(line,500);
+  i++;
+  nextTimer=setTimeout(function(){
+    if(token===playToken && run && !paused)line();
+  },450);
 }
+
 function line(){
   if(!run)return;
+  clearTimers();
+  var token=++playToken;
   var s=S[i];
-  bar.style.width=(i/S.length*100)+"%";
+  bar.style.width=((i+1)/S.length*100)+"%";
   show(s[0],s[1]);
+
   var ss=window.speechSynthesis;
   if(ss&&window.SpeechSynthesisUtterance){
     ss.cancel();
@@ -221,20 +269,94 @@ function line(){
     if(chosen){u.voice=chosen}
     if(s[0]=="J"){u.pitch=1.05;u.rate=1.02}
     else{u.pitch=.84;u.rate=.94}
-    u.onend=done;
-    u.onerror=done;
+
+    var settled=false;
+    function onFinish(){
+      if(settled || token!==playToken || paused)return;
+      settled=true;
+      advanceAfterLine(token);
+    }
+    u.onend=onFinish;
+    u.onerror=onFinish;
     ss.speak(u);
-    T=setTimeout(done,s[1].length*105+4000);
+    T=setTimeout(onFinish,s[1].length*115+3500);
   } else {
-    T=setTimeout(done,s[1].length*70);
+    T=setTimeout(function(){advanceAfterLine(token)},s[1].length*75+1200);
   }
 }
+
 function startShow(){
+  clearTimers();
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
   i=0;
   run=true;
+  paused=false;
+  pauseBtn.textContent="⏸ Pause";
+  setControlButtonsState(true);
   document.getElementById("title").style.display="none";
   line();
 }
+
+function pauseShow(){
+  if(!run || paused)return;
+  paused=true;
+  clearTimers();
+  playToken++;
+  el.J.classList.remove("talk");
+  el.K.classList.remove("talk");
+  if(window.speechSynthesis && window.speechSynthesis.speaking){
+    window.speechSynthesis.pause();
+  }
+  pauseBtn.textContent="▶ Resume";
+}
+
+function resumeShow(){
+  if(!run || !paused)return;
+  paused=false;
+  pauseBtn.textContent="⏸ Pause";
+  if(window.speechSynthesis && window.speechSynthesis.paused){
+    var token=++playToken;
+    var active=S[i];
+    if(active)el[active[0]].classList.add("talk");
+    window.speechSynthesis.resume();
+    var s=S[i] || ["",""];
+    T=setTimeout(function(){
+      if(token===playToken && run && !paused)advanceAfterLine(token);
+    },s[1].length*90+2500);
+  } else {
+    line();
+  }
+}
+
+pauseBtn.onclick=function(){
+  if(paused)resumeShow();
+  else pauseShow();
+};
+
+prevBtn.onclick=function(){
+  if(!run)return;
+  paused=false;
+  pauseBtn.textContent="⏸ Pause";
+  i=Math.max(0,i-1);
+  line();
+};
+
+nextBtn.onclick=function(){
+  if(!run)return;
+  paused=false;
+  pauseBtn.textContent="⏸ Pause";
+  if(i+1>=S.length){
+    finishShow(playToken);
+    return;
+  }
+  i=i+1;
+  line();
+};
+
+restartBtn.onclick=function(){
+  startShow();
+};
+
 document.getElementById("go").onclick=startShow;
 
 document.getElementById("recGo").onclick=async function(){
